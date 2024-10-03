@@ -1,0 +1,21 @@
+  # Ignore build artifacts
+bin/
+obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+
+# Dependencies
+packages/
+*.log
+
+# .NET package manager folders
+.nuget/
+
+# Mac specific files
+.DS_Store
+
+# Elm specific (for future)
+elm-stuff/
