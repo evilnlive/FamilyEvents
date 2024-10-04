@@ -10,6 +10,8 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 
+type Event = { id: int; name: string; date: string; time: string }
+
 // ---------------------------------
 // Models
 // ---------------------------------
@@ -56,11 +58,19 @@ let indexHandler (name : string) =
     let view      = Views.index model
     htmlView view
 
+let getEventsHandler: HttpHandler =
+    let events = [
+        { id = 1; name = "Family Dinner"; date = "2024-10-02"; time = "19:00" }
+        { id = 2; name = "Kids Soccer Practice"; date = "2024-10-03"; time = "17:30" }
+    ]
+    json events
+    
 let webApp =
     choose [
         GET >=>
             choose [
                 route "/" >=> indexHandler "world"
+                route "/events" >=> getEventsHandler
                 routef "/hello/%s" indexHandler
             ]
         setStatusCode 404 >=> text "Not Found" ]
