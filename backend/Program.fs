@@ -64,7 +64,7 @@ let getEventsHandler: HttpHandler =
         { id = 2; name = "Kids Soccer Practice"; date = "2024-10-03"; time = "17:30" }
     ]
     json events
-    
+
 let webApp =
     choose [
         GET >=>
@@ -90,6 +90,7 @@ let errorHandler (ex : Exception) (logger : ILogger) =
 let configureCors (builder : CorsPolicyBuilder) =
     builder
         .WithOrigins(
+            "http://localhost:8000",
             "http://localhost:5000",
             "https://localhost:5001")
        .AllowAnyMethod()
