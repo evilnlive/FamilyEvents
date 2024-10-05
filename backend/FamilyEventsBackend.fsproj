@@ -5,6 +5,7 @@
     <AssemblyName>FamilyEventsBackend</AssemblyName>
     <EnableDefaultContentItems>false</EnableDefaultContentItems>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Giraffe" Version="6.4.0" />
