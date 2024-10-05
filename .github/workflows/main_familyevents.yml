@@ -22,10 +22,10 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release backend/FamilyEventsBackend/FamilyEventsBackend.fsproj
+        run: dotnet build --configuration Release backend/FamilyEventsBackend.fsproj
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp backend/FamilyEventsBackend/FamilyEventsBackend.fsproj
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp backend/FamilyEventsBackend.fsproj
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
