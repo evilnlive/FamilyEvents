@@ -43,8 +43,6 @@ module Views =
 // Web app
 // ---------------------------------
 
-let indexHandler = htmlView Views.indexPage
-
 let getEventsHandler: HttpHandler =
     let events =
         [ { id = 1
@@ -61,7 +59,9 @@ let getEventsHandler: HttpHandler =
 let webApp =
     choose
         [ GET
-          >=> choose [ route "/" >=> indexHandler; route "/events" >=> getEventsHandler ]
+          >=> choose
+                  [ route "/" >=> htmlFile "WebRoot/index.html"
+                    route "/events" >=> getEventsHandler ]
           setStatusCode 404 >=> text "Not Found" ]
 
 // ---------------------------------
