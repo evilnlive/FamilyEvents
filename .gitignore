@@ -1,6 +1,7 @@
-  # Ignore build artifacts
+# Ignore build artifacts
 bin/
 obj/
+dist/
 
 # User-specific files
 *.user
@@ -8,6 +9,7 @@ obj/
 *.suo
 
 # Dependencies
+node_modules/
 packages/
 *.log
 
