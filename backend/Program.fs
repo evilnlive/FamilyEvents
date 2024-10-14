@@ -77,15 +77,12 @@ let errorHandler (ex: Exception) (logger: ILogger) =
 // ---------------------------------
 
 let configureCors (builder: CorsPolicyBuilder) =
-    builder
-        .WithOrigins(
-            "http://localhost:5173",
-            "http://localhost:8000",
-            "http://localhost:5000",
-            "https://localhost:5001"
-        )
-        .AllowAnyMethod()
-        .AllowAnyHeader()
+    let allowedOrigins =
+        match System.Environment.GetEnvironmentVariable("ALLOWED_ORIGINS") with
+        | null -> "http://localhost:5173,http://localhost:8000,http://localhost:5000,https://localhost:5001"
+        | value -> value
+
+    builder.WithOrigins(allowedOrigins.Split(',')).AllowAnyMethod().AllowAnyHeader()
     |> ignore
 
 let configureApp (app: IApplicationBuilder) =
