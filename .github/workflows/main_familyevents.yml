@@ -21,6 +21,11 @@ jobs:
         with:
           dotnet-version: "8.x"
 
+      - name: Log API_URL value
+        run: echo "API_URL is $API_URL"
+        env:
+          API_URL: ${{ secrets.API_URL }}
+
       - name: Install Elm
         run: npm install -g elm
 
