@@ -22,18 +22,22 @@ jobs:
           dotnet-version: "8.x"
 
       - name: Install dependencies
+        working-directory: frontend
         run: yarn install
 
       - name: Build frontend with Vite
+        working-directory: frontend
         run: yarn build
         env:
           API_URL: ${{ secrets.API_URL }}
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release backend/FamilyEventsBackend.fsproj
+        working-directory: backend
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp backend/FamilyEventsBackend.fsproj
+        working-directory: backend
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
         env:
           ALLOWED_ORIGINS: ${{ secrets.ALLOWED_ORIGINS }}
 
