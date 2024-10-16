@@ -21,6 +21,9 @@ jobs:
         with:
           dotnet-version: "8.x"
 
+      - name: Install Elm
+        run: npm install -g elm
+
       - name: Install dependencies
         working-directory: frontend
         run: yarn install
