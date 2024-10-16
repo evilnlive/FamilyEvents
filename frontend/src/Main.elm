@@ -19,12 +19,12 @@ type alias Event =
 
 
 type alias Model =
-    { events : List Event, apiUrl : String }
+    { events : List Event, apiHost : String }
 
 
 init : String -> Model
-init apiUrl =
-    { events = [], apiUrl = apiUrl }
+init apiHost =
+    { events = [], apiHost = apiHost }
 
 
 
@@ -40,7 +40,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FetchEvents ->
-            ( model, fetchEvents model.apiUrl )
+            ( model, fetchEvents model.apiHost )
 
         EventsFetched (Ok events) ->
             ( { model | events = events }, Cmd.none )
@@ -72,7 +72,7 @@ viewEvents events =
 
 
 fetchEvents : String -> Cmd Msg
-fetchEvents apiUrl =
+fetchEvents apiHost =
     let
         decoder : Decoder (List Event)
         decoder =
@@ -94,7 +94,7 @@ fetchEvents apiUrl =
                 )
     in
     Http.get
-        { url = apiUrl ++ "/events"
+        { url = apiHost ++ "/events"
         , expect = Http.expectJson EventsFetched decoder
         }
 
@@ -106,7 +106,7 @@ fetchEvents apiUrl =
 main : Program String Model Msg
 main =
     Browser.element
-        { init = \apiUrl -> ( init apiUrl, fetchEvents apiUrl )
+        { init = \apiHost -> ( init apiHost, fetchEvents apiHost )
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view
