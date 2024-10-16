@@ -1,16 +1,14 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, h1, text, ul, li)
+import Html exposing (Html, div, h1, li, text, ul)
 import Http
-import Json.Decode exposing (Decoder, field, int, string, list)
-import Json.Decode exposing (andThen)
-import Json.Decode exposing (map)
-import Debug exposing (log)
-import Debug exposing (toString)
+import Json.Decode exposing (Decoder, andThen, field, int, list, map, string)
+
 
 
 -- MODEL
+
 
 type alias Event =
     { id : Int
@@ -19,15 +17,19 @@ type alias Event =
     , time : String
     }
 
-type alias Model =
-    { events : List Event }
 
-init : Model
-init =
-    { events = [] }
+type alias Model =
+    { events : List Event, apiUrl : String }
+
+
+init : String -> Model
+init apiUrl =
+    { events = [], apiUrl = apiUrl }
+
 
 
 -- UPDATE
+
 
 type Msg
     = FetchEvents
@@ -38,16 +40,18 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         FetchEvents ->
-            ( model, fetchEvents )
+            ( model, fetchEvents model.apiUrl )
 
         EventsFetched (Ok events) ->
-             ( { model | events = events }, Cmd.none )
+            ( { model | events = events }, Cmd.none )
 
         EventsFetched (Err _) ->
             ( model, Cmd.none )
 
 
+
 -- VIEW
+
 
 view : Model -> Html Msg
 view model =
@@ -56,44 +60,53 @@ view model =
         , viewEvents model.events
         ]
 
+
 viewEvents : List Event -> Html msg
 viewEvents events =
     ul []
         (List.map (\event -> li [] [ text event.name ]) events)
 
 
+
 -- HTTP REQUEST
 
-fetchEvents : Cmd Msg
-fetchEvents =
+
+fetchEvents : String -> Cmd Msg
+fetchEvents apiUrl =
     let
         decoder : Decoder (List Event)
         decoder =
-            list (field "id" int
-                |> andThen (\id ->
-                    field "name" string
-                        |> andThen (\name ->
-                            field "date" string
-                                |> andThen (\date ->
-                                    field "time" string
-                                        |> map (\time -> { id = id, name = name, date = date, time = time })
-                                )
+            list
+                (field "id" int
+                    |> andThen
+                        (\id ->
+                            field "name" string
+                                |> andThen
+                                    (\name ->
+                                        field "date" string
+                                            |> andThen
+                                                (\date ->
+                                                    field "time" string
+                                                        |> map (\time -> { id = id, name = name, date = date, time = time })
+                                                )
+                                    )
                         )
                 )
-            )
     in
     Http.get
-        { url = "http://localhost:5000/events"
+        { url = apiUrl ++ "/events"
         , expect = Http.expectJson EventsFetched decoder
         }
 
 
+
 -- MAIN
 
-main : Program () Model Msg
+
+main : Program String Model Msg
 main =
     Browser.element
-        { init = \_ -> ( init, fetchEvents )
+        { init = \apiUrl -> ( init apiUrl, fetchEvents apiUrl )
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view

@@ -21,6 +21,14 @@ jobs:
         with:
           dotnet-version: "8.x"
 
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build frontend with Vite
+        run: yarn build
+        env:
+          API_URL: ${{ secrets.API_URL }}
+
       - name: Build with dotnet
         run: dotnet build --configuration Release backend/FamilyEventsBackend.fsproj
 
