@@ -56,7 +56,7 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ h1 [] [ text "Family Events" ]
+        [ h1 [] [ text "Familjeschema" ]
         , viewEvents model.events
         ]
 
