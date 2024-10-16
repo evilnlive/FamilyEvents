@@ -28,6 +28,11 @@ jobs:
         working-directory: frontend
         run: yarn install
 
+      - name: Log API_HOST value
+        run: echo "API_HOST is $API_HOST"
+        env:
+          API_HOST: ${{ secrets.API_HOST }}
+
       - name: Build frontend with Vite
         working-directory: frontend
         run: yarn build
