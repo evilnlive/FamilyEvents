@@ -9,12 +9,8 @@ open Microsoft.Extensions.Hosting
 open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
+open FamilyEventsBackend.Data
 
-type Event =
-    { id: int
-      name: string
-      date: string
-      time: string }
 
 // ---------------------------------
 // Models
@@ -43,18 +39,7 @@ module Views =
 // Web app
 // ---------------------------------
 
-let getEventsHandler: HttpHandler =
-    let events =
-        [ { id = 1
-            name = "Family Dinner"
-            date = "2024-10-02"
-            time = "19:00" }
-          { id = 2
-            name = "Kids Soccer Practice"
-            date = "2024-10-03"
-            time = "17:30" } ]
-
-    json events
+let getEventsHandler: HttpHandler = json Data.persons
 
 let webApp =
     choose

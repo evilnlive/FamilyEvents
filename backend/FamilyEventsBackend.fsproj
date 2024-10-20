@@ -12,6 +12,10 @@
     <PackageReference Include="Giraffe.ViewEngine" Version="1.4.*" />
   </ItemGroup>
   <ItemGroup>
+  <Compile Include="Domain.fs" />
+  <Compile Include="Data.fs" />
+</ItemGroup>
+  <ItemGroup>
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

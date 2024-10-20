@@ -12,9 +12,9 @@ import Json.Decode exposing (Decoder, andThen, field, int, list, map, string)
 
 type alias Event =
     { id : Int
-    , name : String
-    , date : String
-    , time : String
+    , title : String
+    , startTime : String
+    , endTime : String
     }
 
 
@@ -64,7 +64,7 @@ view model =
 viewEvents : List Event -> Html msg
 viewEvents events =
     ul []
-        (List.map (\event -> li [] [ text event.name ]) events)
+        (List.map (\event -> li [] [ text event.title ]) events)
 
 
 
@@ -80,14 +80,14 @@ fetchEvents apiHost =
                 (field "id" int
                     |> andThen
                         (\id ->
-                            field "name" string
+                            field "title" string
                                 |> andThen
-                                    (\name ->
-                                        field "date" string
+                                    (\title ->
+                                        field "startTime" string
                                             |> andThen
-                                                (\date ->
-                                                    field "time" string
-                                                        |> map (\time -> { id = id, name = name, date = date, time = time })
+                                                (\startTime ->
+                                                    field "endTime" string
+                                                        |> map (\endTime -> { id = id, title = title, startTime = startTime, endTime = endTime })
                                                 )
                                     )
                         )
