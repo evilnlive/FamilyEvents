@@ -1,9 +1,9 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, h1, li, text, ul)
+import Html exposing (Html, div, h1, h2, li, text, ul)
 import Http
-import Json.Decode exposing (Decoder, andThen, field, int, list, map, string)
+import Json.Decode exposing (Decoder, field, list, map3, map4, string)
 
 
 
@@ -11,20 +11,27 @@ import Json.Decode exposing (Decoder, andThen, field, int, list, map, string)
 
 
 type alias Event =
-    { id : Int
+    { id : String
     , title : String
     , startTime : String
     , endTime : String
     }
 
 
+type alias Person =
+    { id : String
+    , nickName : String
+    , events : List Event
+    }
+
+
 type alias Model =
-    { events : List Event, apiHost : String }
+    { persons : List Person, apiHost : String }
 
 
 init : String -> Model
 init apiHost =
-    { events = [], apiHost = apiHost }
+    { persons = [], apiHost = apiHost }
 
 
 
@@ -32,20 +39,20 @@ init apiHost =
 
 
 type Msg
-    = FetchEvents
-    | EventsFetched (Result Http.Error (List Event))
+    = FetchPersons
+    | PersonsFetched (Result Http.Error (List Person))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        FetchEvents ->
-            ( model, fetchEvents model.apiHost )
+        FetchPersons ->
+            ( model, fetchPersons model.apiHost )
 
-        EventsFetched (Ok events) ->
-            ( { model | events = events }, Cmd.none )
+        PersonsFetched (Ok persons) ->
+            ( { model | persons = persons }, Cmd.none )
 
-        EventsFetched (Err _) ->
+        PersonsFetched (Err _) ->
             ( model, Cmd.none )
 
 
@@ -57,45 +64,52 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Familjeschema" ]
-        , viewEvents model.events
+        , viewPersons model.persons
         ]
 
 
-viewEvents : List Event -> Html msg
-viewEvents events =
+viewPersons : List Person -> Html msg
+viewPersons persons =
     ul []
-        (List.map (\event -> li [] [ text event.title ]) events)
+        (List.map
+            (\person ->
+                li []
+                    [ div []
+                        [ h2 [] [ text person.nickName ]
+                        , ul [] (List.map (\event -> li [] [ text event.title ]) person.events)
+                        ]
+                    ]
+            )
+            persons
+        )
 
 
 
 -- HTTP REQUEST
 
 
-fetchEvents : String -> Cmd Msg
-fetchEvents apiHost =
-    let
-        decoder : Decoder (List Event)
-        decoder =
-            list
-                (field "id" int
-                    |> andThen
-                        (\id ->
-                            field "title" string
-                                |> andThen
-                                    (\title ->
-                                        field "startTime" string
-                                            |> andThen
-                                                (\startTime ->
-                                                    field "endTime" string
-                                                        |> map (\endTime -> { id = id, title = title, startTime = startTime, endTime = endTime })
-                                                )
-                                    )
-                        )
-                )
-    in
+eventDecoder : Decoder Event
+eventDecoder =
+    map4 Event
+        (field "id" string)
+        (field "title" string)
+        (field "startTime" string)
+        (field "endTime" string)
+
+
+personDecoder : Decoder Person
+personDecoder =
+    map3 Person
+        (field "id" string)
+        (field "nickName" string)
+        (field "events" (list eventDecoder))
+
+
+fetchPersons : String -> Cmd Msg
+fetchPersons apiHost =
     Http.get
         { url = apiHost ++ "/events"
-        , expect = Http.expectJson EventsFetched decoder
+        , expect = Http.expectJson PersonsFetched (list personDecoder)
         }
 
 
@@ -106,7 +120,7 @@ fetchEvents apiHost =
 main : Program String Model Msg
 main =
     Browser.element
-        { init = \apiHost -> ( init apiHost, fetchEvents apiHost )
+        { init = \apiHost -> ( init apiHost, fetchPersons apiHost )
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view
