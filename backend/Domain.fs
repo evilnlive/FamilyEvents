@@ -2,13 +2,20 @@ namespace FamilyEventsBackend.Domain
 
 open System
 
+type Time = { HH: int; MM: int }
+
 type Event =
     { Id: Guid
       Title: string
-      StartTime: DateTime
-      EndTime: DateTime }
+      StartTime: Time
+      EndTime: Time }
 
-type Person =
-    { Id: Guid
-      NickName: string
-      Events: Event list }
+type Person = { Id: Guid; NickName: string }
+
+type ScheduleEntry = { Event: Event; Persons: Person list }
+
+type Day =
+    { DayOfWeek: int
+      Entries: ScheduleEntry list }
+
+type Week = { WeekNumber: int; Days: Day list }

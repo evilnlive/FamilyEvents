@@ -3,35 +3,58 @@ module Main exposing (main)
 import Browser
 import Html exposing (Html, div, h1, h2, li, text, ul)
 import Http
-import Json.Decode exposing (Decoder, field, list, map3, map4, string)
+import Json.Decode exposing (Decoder, field, int, list, map2, map3, map4, string)
 
 
 
 -- MODEL
 
 
+type alias Time =
+    { hh : Int
+    , mm : Int
+    }
+
+
 type alias Event =
     { id : String
     , title : String
-    , startTime : String
-    , endTime : String
+    , startTime : Time
+    , endTime : Time
     }
 
 
 type alias Person =
     { id : String
     , nickName : String
-    , events : List Event
+    }
+
+
+type alias ScheduleEntry =
+    { event : Event
+    , persons : List Person
+    }
+
+
+type alias Day =
+    { dayOfWeek : Int
+    , entries : List ScheduleEntry
+    }
+
+
+type alias Week =
+    { weekNumber : Int
+    , days : List Day
     }
 
 
 type alias Model =
-    { persons : List Person, apiHost : String }
+    { week : Week, apiHost : String }
 
 
 init : String -> Model
 init apiHost =
-    { persons = [], apiHost = apiHost }
+    { week = { weekNumber = 0, days = [] }, apiHost = apiHost }
 
 
 
@@ -39,20 +62,20 @@ init apiHost =
 
 
 type Msg
-    = FetchPersons
-    | PersonsFetched (Result Http.Error (List Person))
+    = FetchWeek
+    | WeekFetched (Result Http.Error Week)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        FetchPersons ->
-            ( model, fetchPersons model.apiHost )
+        FetchWeek ->
+            ( model, fetchWeek model.apiHost )
 
-        PersonsFetched (Ok persons) ->
-            ( { model | persons = persons }, Cmd.none )
+        WeekFetched (Ok week) ->
+            ( { model | week = week }, Cmd.none )
 
-        PersonsFetched (Err _) ->
+        WeekFetched (Err _) ->
             ( model, Cmd.none )
 
 
@@ -64,28 +87,56 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Familjeschema" ]
-        , viewPersons model.persons
+        , viewWeek model.week
         ]
 
 
-viewPersons : List Person -> Html msg
-viewPersons persons =
-    ul []
-        (List.map
-            (\person ->
-                li []
-                    [ div []
-                        [ h2 [] [ text person.nickName ]
-                        , ul [] (List.map (\event -> li [] [ text event.title ]) person.events)
-                        ]
-                    ]
-            )
-            persons
+viewWeek : Week -> Html msg
+viewWeek week =
+    div []
+        (div [] [ text ("Vecka " ++ String.fromInt week.weekNumber) ]
+            :: List.map (\weekDay -> div [] [ text weekDay.name ]) weekDays
         )
 
 
 
+-- div []
+--  [
+--     ul []
+--         (List.map
+--             (\day ->
+--                 li []
+--                     (List.map
+--                         (\scheduleEntry ->
+--                             li []
+--                                 [ text scheduleEntry.event.title ]
+--                         )
+--                         day.entries
+--                     )
+--             )
+--             week.days
+--         )
+--     ]
 -- HTTP REQUEST
+
+
+weekDays : List { dayOfWeek : Int, name : String }
+weekDays =
+    [ { dayOfWeek = 1, name = "Måndag" }
+    , { dayOfWeek = 2, name = "Tisdag" }
+    , { dayOfWeek = 3, name = "Onsdag" }
+    , { dayOfWeek = 4, name = "Torsdag" }
+    , { dayOfWeek = 5, name = "Fredag" }
+    , { dayOfWeek = 6, name = "Lördag" }
+    , { dayOfWeek = 7, name = "Söndag" }
+    ]
+
+
+timeDecoder : Decoder Time
+timeDecoder =
+    map2 Time
+        (field "hh" int)
+        (field "mm" int)
 
 
 eventDecoder : Decoder Event
@@ -93,23 +144,43 @@ eventDecoder =
     map4 Event
         (field "id" string)
         (field "title" string)
-        (field "startTime" string)
-        (field "endTime" string)
+        (field "startTime" timeDecoder)
+        (field "endTime" timeDecoder)
 
 
 personDecoder : Decoder Person
 personDecoder =
-    map3 Person
+    map2 Person
         (field "id" string)
         (field "nickName" string)
-        (field "events" (list eventDecoder))
 
 
-fetchPersons : String -> Cmd Msg
-fetchPersons apiHost =
+scheduleEntryDecoder : Decoder ScheduleEntry
+scheduleEntryDecoder =
+    map2 ScheduleEntry
+        (field "event" eventDecoder)
+        (field "persons" (list personDecoder))
+
+
+dayDecoder : Decoder Day
+dayDecoder =
+    map2 Day
+        (field "dayOfWeek" int)
+        (field "entries" (list scheduleEntryDecoder))
+
+
+weekDecoder : Decoder Week
+weekDecoder =
+    map2 Week
+        (field "weekNumber" int)
+        (field "days" (list dayDecoder))
+
+
+fetchWeek : String -> Cmd Msg
+fetchWeek apiHost =
     Http.get
-        { url = apiHost ++ "/events"
-        , expect = Http.expectJson PersonsFetched (list personDecoder)
+        { url = apiHost ++ "/week"
+        , expect = Http.expectJson WeekFetched weekDecoder
         }
 
 
@@ -120,7 +191,7 @@ fetchPersons apiHost =
 main : Program String Model Msg
 main =
     Browser.element
-        { init = \apiHost -> ( init apiHost, fetchPersons apiHost )
+        { init = \apiHost -> ( init apiHost, fetchWeek apiHost )
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view

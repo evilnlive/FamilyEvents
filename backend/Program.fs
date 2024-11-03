@@ -39,14 +39,14 @@ module Views =
 // Web app
 // ---------------------------------
 
-let getEventsHandler: HttpHandler = json Data.persons
+let getWeekHandler: HttpHandler = json Data.weekSchedule
 
 let webApp =
     choose
         [ GET
           >=> choose
                   [ route "/" >=> htmlFile "WebRoot/index.html"
-                    route "/events" >=> getEventsHandler ]
+                    route "/week" >=> getWeekHandler ]
           setStatusCode 404 >=> text "Not Found" ]
 
 // ---------------------------------
