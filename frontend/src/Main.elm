@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, div, h1, h2, li, text, ul)
+import Html.Attributes exposing (class)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map2, map3, map4, string)
 
@@ -93,30 +94,35 @@ view model =
 
 viewWeek : Week -> Html msg
 viewWeek week =
-    div []
-        (div [] [ text ("Vecka " ++ String.fromInt week.weekNumber) ]
-            :: List.map (\weekDay -> div [] [ text weekDay.name ]) weekDays
-        )
+    div [ class "week" ]
+        [ div [ class "row header" ]
+            (div [] [ text ("Vecka " ++ String.fromInt week.weekNumber) ]
+                :: List.map (\weekDay -> div [] [ text weekDay.name ]) weekDays
+            )
+        , div [ class "row" ]
+            (div [] []
+                :: List.map
+                    (\weekDay ->
+                        div []
+                            (List.map
+                                (\day ->
+                                    div []
+                                        (List.map scheduleEntryView day.entries)
+                                )
+                                (List.filter (\day -> day.dayOfWeek == weekDay.dayOfWeek) week.days)
+                            )
+                    )
+                    weekDays
+            )
+        ]
+
+
+scheduleEntryView : ScheduleEntry -> Html msg
+scheduleEntryView scheduleEntry =
+    div [] [ text scheduleEntry.event.title ]
 
 
 
--- div []
---  [
---     ul []
---         (List.map
---             (\day ->
---                 li []
---                     (List.map
---                         (\scheduleEntry ->
---                             li []
---                                 [ text scheduleEntry.event.title ]
---                         )
---                         day.entries
---                     )
---             )
---             week.days
---         )
---     ]
 -- HTTP REQUEST
 
 

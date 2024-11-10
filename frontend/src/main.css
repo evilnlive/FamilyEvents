@@ -1,3 +1,34 @@
-body {
-    /* background-color: crimson; */
+.week {
+  display: grid;
+  grid-template-columns: 1fr repeat(7, 1fr); /* 1 column for 'Vecka' label + 7 for days */
+  gap: 5px;
+}
+
+.header {
+  font-weight: bold;
+  background-color: #f0f0f0;
+  display: contents; /* Allows grid items to flow into grid cells */
+}
+
+.row {
+  display: contents;
+}
+
+.row div {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.row div:nth-child(1) {
+  /* Styling for the first column, e.g., "Vecka" label */
+  font-weight: bold;
+  background-color: #e0e0e0;
+}
+
+.row div:nth-child(4),
+.row div:nth-child(8) {
+  /* Styling for specific events, optional */
+  background-color: #d0f0d0;
+  font-weight: bold;
 }

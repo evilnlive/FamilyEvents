@@ -47,6 +47,7 @@ module Data =
     let days =
         [ { DayOfWeek = 3
             Entries = entriesWednesday }
-          { DayOfWeek = 7; Entries = [] } ]
+          { DayOfWeek = 7
+            Entries = entriesSunday } ]
 
     let weekSchedule = { WeekNumber = 44; Days = days }
