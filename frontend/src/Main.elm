@@ -88,6 +88,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Familjeschema" ]
+        , div [] [ text ("Vecka " ++ String.fromInt model.week.weekNumber) ]
         , viewWeek model.week
         ]
 
@@ -95,38 +96,59 @@ view model =
 viewWeek : Week -> Html msg
 viewWeek week =
     div [ class "week" ]
-        [ div [ class "row header" ]
-            (div [] [ text ("Vecka " ++ String.fromInt week.weekNumber) ]
-                :: List.map (\weekDay -> div [] [ text weekDay.name ]) weekDays
-            )
-        , div [ class "row" ]
-            (div [] []
-                :: List.map
-                    (\weekDay ->
-                        div []
-                            (List.map
-                                (\day ->
-                                    div []
-                                        (List.map scheduleEntryView day.entries)
-                                )
-                                (List.filter (\day -> day.dayOfWeek == weekDay.dayOfWeek) week.days)
-                            )
-                    )
-                    weekDays
-            )
+        [ viewWeekHeader
+        , viewWeekDays week
         ]
 
 
-scheduleEntryView : ScheduleEntry -> Html msg
-scheduleEntryView scheduleEntry =
-    div [] [ text scheduleEntry.event.title ]
+viewWeekDays : Week -> Html msg
+viewWeekDays week =
+    div [ class "row" ]
+        (List.map
+            (\weekDay ->
+                viewWeekDay weekDay week
+            )
+            weekDays
+        )
+
+
+viewWeekDay : WeekDay -> Week -> Html msg
+viewWeekDay weekDay week =
+    div [ class "week-day" ]
+        (List.map
+            (\day ->
+                div [ class "week-day-entries" ]
+                    (List.map viewScheduleEntry day.entries)
+            )
+            (onlyDaysOnWeekDay weekDay week.days)
+        )
+
+
+onlyDaysOnWeekDay : WeekDay -> List Day -> List Day
+onlyDaysOnWeekDay weekDay days =
+    List.filter (\day -> day.dayOfWeek == weekDay.dayOfWeek) days
+
+
+viewWeekHeader : Html msg
+viewWeekHeader =
+    div [ class "row header" ]
+        (List.map (\weekDay -> div [] [ text weekDay.name ]) weekDays)
+
+
+viewScheduleEntry : ScheduleEntry -> Html msg
+viewScheduleEntry scheduleEntry =
+    div [ class "week-day-entry" ] [ text scheduleEntry.event.title ]
 
 
 
 -- HTTP REQUEST
 
 
-weekDays : List { dayOfWeek : Int, name : String }
+type alias WeekDay =
+    { dayOfWeek : Int, name : String }
+
+
+weekDays : List WeekDay
 weekDays =
     [ { dayOfWeek = 1, name = "Måndag" }
     , { dayOfWeek = 2, name = "Tisdag" }
