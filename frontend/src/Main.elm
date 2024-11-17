@@ -1,14 +1,30 @@
 module Main exposing (main)
 
 import Browser
-import Html exposing (Html, div, h1, h2, li, text, ul)
-import Html.Attributes exposing (class)
+import Html exposing (Html, div, h1, text)
+import Html.Attributes exposing (attribute, class)
 import Http
-import Json.Decode exposing (Decoder, field, int, list, map2, map3, map4, string)
+import Json.Decode exposing (Decoder, field, int, list, map2, map4, string)
 
 
 
 -- MODEL
+
+
+type alias WeekDay =
+    { dayOfWeek : Int, name : String }
+
+
+weekDays : List WeekDay
+weekDays =
+    [ { dayOfWeek = 1, name = "Måndag" }
+    , { dayOfWeek = 2, name = "Tisdag" }
+    , { dayOfWeek = 3, name = "Onsdag" }
+    , { dayOfWeek = 4, name = "Torsdag" }
+    , { dayOfWeek = 5, name = "Fredag" }
+    , { dayOfWeek = 6, name = "Lördag" }
+    , { dayOfWeek = 7, name = "Söndag" }
+    ]
 
 
 type alias Time =
@@ -96,43 +112,34 @@ view model =
 viewWeek : Week -> Html msg
 viewWeek week =
     div [ class "week" ]
-        [ viewWeekHeader
-        , viewWeekDays week
-        ]
+        (viewWeekDays week)
 
 
-viewWeekDays : Week -> Html msg
+viewWeekDays : Week -> List (Html msg)
 viewWeekDays week =
-    div [ class "row" ]
-        (List.map
-            (\weekDay ->
-                viewWeekDay weekDay week
-            )
-            weekDays
+    List.map
+        (\weekDay ->
+            viewWeekDay weekDay week
         )
+        weekDays
 
 
 viewWeekDay : WeekDay -> Week -> Html msg
 viewWeekDay weekDay week =
     div [ class "week-day" ]
-        (List.map
-            (\day ->
-                div [ class "week-day-entries" ]
-                    (List.map viewScheduleEntry day.entries)
-            )
-            (onlyDaysOnWeekDay weekDay week.days)
+        (div [ class "week-day-name" ] [ text weekDay.name ]
+            :: List.map
+                (\day ->
+                    div [ class "week-day-entries" ]
+                        (List.map viewScheduleEntry day.entries)
+                )
+                (onlyDaysOnWeekDay weekDay week.days)
         )
 
 
 onlyDaysOnWeekDay : WeekDay -> List Day -> List Day
 onlyDaysOnWeekDay weekDay days =
     List.filter (\day -> day.dayOfWeek == weekDay.dayOfWeek) days
-
-
-viewWeekHeader : Html msg
-viewWeekHeader =
-    div [ class "row header" ]
-        (List.map (\weekDay -> div [] [ text weekDay.name ]) weekDays)
 
 
 viewScheduleEntry : ScheduleEntry -> Html msg
@@ -142,22 +149,6 @@ viewScheduleEntry scheduleEntry =
 
 
 -- HTTP REQUEST
-
-
-type alias WeekDay =
-    { dayOfWeek : Int, name : String }
-
-
-weekDays : List WeekDay
-weekDays =
-    [ { dayOfWeek = 1, name = "Måndag" }
-    , { dayOfWeek = 2, name = "Tisdag" }
-    , { dayOfWeek = 3, name = "Onsdag" }
-    , { dayOfWeek = 4, name = "Torsdag" }
-    , { dayOfWeek = 5, name = "Fredag" }
-    , { dayOfWeek = 6, name = "Lördag" }
-    , { dayOfWeek = 7, name = "Söndag" }
-    ]
 
 
 timeDecoder : Decoder Time

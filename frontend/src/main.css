@@ -1,20 +1,25 @@
 .week {
-  display: grid;
-  grid-template-columns: 1fr repeat(6, 1fr);
-  gap: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.header {
+.week-day {
+  outline: 1px solid #ccc;
+  padding: 1rem;
+}
+
+.week-day-name {
   font-weight: bold;
-  background-color: #f0f0f0;
-  display: contents; /* Allows grid items to flow into grid cells */
 }
 
-.row {
-  display: contents;
-}
+@media (min-width: 48rem) {
+  .week {
+    flex-direction: row;
+    gap: 0;
+  }
 
-.row div {
-  padding: 10px;
-  text-align: center;
+  .week-day {
+    flex: 1;
+  }
 }
