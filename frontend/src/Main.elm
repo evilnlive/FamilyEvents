@@ -2,7 +2,7 @@ module Main exposing (main)
 
 import Browser
 import Html exposing (Html, div, h1, text)
-import Html.Attributes exposing (attribute, class)
+import Html.Attributes exposing (class)
 import Http
 import Json.Decode exposing (Decoder, field, int, list, map2, map4, string)
 
@@ -74,6 +74,11 @@ init apiHost =
     { week = { weekNumber = 0, days = [] }, apiHost = apiHost }
 
 
+onlyDaysOnWeekDay : WeekDay -> List Day -> List Day
+onlyDaysOnWeekDay weekDay days =
+    List.filter (\day -> day.dayOfWeek == weekDay.dayOfWeek) days
+
+
 
 -- UPDATE
 
@@ -137,14 +142,30 @@ viewWeekDay weekDay week =
         )
 
 
-onlyDaysOnWeekDay : WeekDay -> List Day -> List Day
-onlyDaysOnWeekDay weekDay days =
-    List.filter (\day -> day.dayOfWeek == weekDay.dayOfWeek) days
-
-
 viewScheduleEntry : ScheduleEntry -> Html msg
 viewScheduleEntry scheduleEntry =
-    div [ class "week-day-entry" ] [ text scheduleEntry.event.title ]
+    div [ class "week-day-entry" ]
+        [ text
+            (scheduleEntry.event.title
+                ++ " "
+                ++ timeIntervalString scheduleEntry.event.startTime scheduleEntry.event.endTime
+                ++ " "
+                ++ (scheduleEntry.persons
+                        |> List.map .nickName
+                        |> String.join ", "
+                   )
+            )
+        ]
+
+
+timeIntervalString : Time -> Time -> String
+timeIntervalString start end =
+    timeToString start ++ " - " ++ timeToString end
+
+
+timeToString : Time -> String
+timeToString time =
+    String.fromInt time.hh ++ ":" ++ String.fromInt time.mm
 
 
 
