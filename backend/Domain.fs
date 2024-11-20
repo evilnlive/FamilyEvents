@@ -15,7 +15,7 @@ type Person = { Id: Guid; NickName: string }
 type ScheduleEntry = { Event: Event; Persons: Person list }
 
 type Day =
-    { DayOfWeek: int
+    { DayOfWeek: DayOfWeek
       Entries: ScheduleEntry list }
 
 type Week = { WeekNumber: int; Days: Day list }

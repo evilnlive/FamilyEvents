@@ -45,9 +45,17 @@ module Data =
             Persons = [ juni ] } ]
 
     let days =
-        [ { DayOfWeek = 3
+        [ { DayOfWeek = DayOfWeek.Wednesday
             Entries = entriesWednesday }
-          { DayOfWeek = 7
+          { DayOfWeek = DayOfWeek.Friday
+            Entries =
+              [ { Event =
+                    { Id = Guid.NewGuid()
+                      Title = "AW"
+                      StartTime = { HH = 16; MM = 0 }
+                      EndTime = { HH = 22; MM = 0 } }
+                  Persons = [ mamma ] } ] }
+          { DayOfWeek = DayOfWeek.Sunday
             Entries = entriesSunday } ]
 
-    let weekSchedule = { WeekNumber = 44; Days = days }
+    let weekSchedule = { WeekNumber = 47; Days = days }

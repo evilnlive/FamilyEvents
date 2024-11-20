@@ -23,7 +23,7 @@ weekDays =
     , { dayOfWeek = 4, name = "Torsdag" }
     , { dayOfWeek = 5, name = "Fredag" }
     , { dayOfWeek = 6, name = "Lördag" }
-    , { dayOfWeek = 7, name = "Söndag" }
+    , { dayOfWeek = 0, name = "Söndag" }
     ]
 
 
