@@ -165,7 +165,12 @@ timeIntervalString start end =
 
 timeToString : Time -> String
 timeToString time =
-    String.fromInt time.hh ++ ":" ++ String.fromInt time.mm
+    String.fromInt time.hh ++ ":" ++ minutesToString time.mm
+
+
+minutesToString : Int -> String
+minutesToString mm =
+    String.right 2 ("0" ++ String.fromInt mm)
 
 
 
