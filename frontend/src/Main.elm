@@ -66,12 +66,12 @@ type alias Week =
 
 
 type alias Model =
-    { week : Week, apiHost : String }
+    { weeks : List Week, apiHost : String }
 
 
 init : String -> Model
 init apiHost =
-    { week = { weekNumber = 0, days = [] }, apiHost = apiHost }
+    { weeks = [ { weekNumber = 0, days = [] } ], apiHost = apiHost }
 
 
 onlyDaysOnWeekDay : WeekDay -> List Day -> List Day
@@ -84,20 +84,20 @@ onlyDaysOnWeekDay weekDay days =
 
 
 type Msg
-    = FetchWeek
-    | WeekFetched (Result Http.Error Week)
+    = FetchWeeks
+    | WeeksFetched (Result Http.Error (List Week))
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        FetchWeek ->
-            ( model, fetchWeek model.apiHost )
+        FetchWeeks ->
+            ( model, fetchWeeks model.apiHost )
 
-        WeekFetched (Ok week) ->
-            ( { model | week = week }, Cmd.none )
+        WeeksFetched (Ok weeks) ->
+            ( { model | weeks = weeks }, Cmd.none )
 
-        WeekFetched (Err _) ->
+        WeeksFetched (Err _) ->
             ( model, Cmd.none )
 
 
@@ -109,15 +109,21 @@ view : Model -> Html Msg
 view model =
     div []
         [ h1 [] [ text "Familjeschema" ]
-        , div [] [ text ("Vecka " ++ String.fromInt model.week.weekNumber) ]
-        , viewWeek model.week
+        , viewWeeks model.weeks
         ]
+
+
+viewWeeks : List Week -> Html Msg
+viewWeeks weeks =
+    div [ class "weeks" ] (List.map viewWeek weeks)
 
 
 viewWeek : Week -> Html msg
 viewWeek week =
     div [ class "week" ]
-        (viewWeekDays week)
+        [ div [] [ text ("Vecka " ++ String.fromInt week.weekNumber) ]
+        , div [ class "week-row" ] (viewWeekDays week)
+        ]
 
 
 viewWeekDays : Week -> List (Html msg)
@@ -221,11 +227,16 @@ weekDecoder =
         (field "days" (list dayDecoder))
 
 
-fetchWeek : String -> Cmd Msg
-fetchWeek apiHost =
+weeksDecoder : Decoder (List Week)
+weeksDecoder =
+    list weekDecoder
+
+
+fetchWeeks : String -> Cmd Msg
+fetchWeeks apiHost =
     Http.get
-        { url = apiHost ++ "/week"
-        , expect = Http.expectJson WeekFetched weekDecoder
+        { url = apiHost ++ "/weeks"
+        , expect = Http.expectJson WeeksFetched weeksDecoder
         }
 
 
@@ -236,7 +247,7 @@ fetchWeek apiHost =
 main : Program String Model Msg
 main =
     Browser.element
-        { init = \apiHost -> ( init apiHost, fetchWeek apiHost )
+        { init = \apiHost -> ( init apiHost, fetchWeeks apiHost )
         , update = update
         , subscriptions = \_ -> Sub.none
         , view = view

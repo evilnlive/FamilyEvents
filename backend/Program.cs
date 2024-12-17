@@ -28,7 +28,12 @@ namespace FamilyEventsBackend.App
         // Handlers
         public static async Task GetWeekHandler(HttpContext context)
         {
-            await context.Response.WriteAsJsonAsync(FamilyEventsBackend.Data.Data.WeekSchedule);
+            await context.Response.WriteAsJsonAsync(Data.Weeks[0]);
+        }
+
+        public static async Task GetWeeksHandler(HttpContext context)
+        {
+            await context.Response.WriteAsJsonAsync(Data.Weeks);
         }
 
         // Configure Middleware
@@ -64,6 +69,7 @@ namespace FamilyEventsBackend.App
                 });
 
                 endpoints.MapGet("/week", GetWeekHandler);
+                endpoints.MapGet("/weeks", GetWeeksHandler);
 
                 endpoints.MapFallback(async context =>
                 {
