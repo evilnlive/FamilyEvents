@@ -1,3 +1,19 @@
+:root {
+  --monday-color: #7cb342;
+  --tuesday-color: #64b5f6;
+  --wednesday-color: #000;
+  --thursday-color: #a1887f;
+  --friday-color: #ffd600;
+  --saturday-color: #f48fb1;
+  --sunday-color: #e57373;
+}
+
+body {
+  font-family: "Poppins", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 .weeks {
   display: flex;
   flex-direction: column;
@@ -14,38 +30,66 @@
 }
 
 .week-day-1 {
-  outline: 0.125rem solid #7cb342;
+  outline: 0.125rem solid var(--monday-color);
   background-color: #eaf4e0;
+
+  .week-day-name {
+    color: var(--monday-color);
+  }
 }
 
 .week-day-2 {
-  outline: 0.125rem solid #64b5f6;
+  outline: 0.125rem solid var(--tuesday-color);
   background-color: #e3f2fd;
+
+  .week-day-name {
+    color: var(--tuesday-color);
+  }
 }
 
 .week-day-3 {
-  outline: 0.125rem solid #000;
+  outline: 0.125rem solid var(--wednesday-color);
   background-color: #f9f9f9;
+
+  .week-day-name {
+    color: var(--wednesday-color);
+  }
 }
 
 .week-day-4 {
-  outline: 0.125rem solid #a1887f;
+  outline: 0.125rem solid var(--thursday-color);
   background-color: #ede7e3;
+
+  .week-day-name {
+    color: var(--thursday-color);
+  }
 }
 
 .week-day-5 {
-  outline: 0.125rem solid #ffd600;
+  outline: 0.125rem solid var(--friday-color);
   background-color: #fff9e0;
+
+  .week-day-name {
+    color: var(--friday-color);
+  }
 }
 
 .week-day-6 {
-  outline: 0.125rem solid #f48fb1;
+  outline: 0.125rem solid var(--saturday-color);
   background-color: #fde9ef;
+
+  .week-day-name {
+    color: var(--saturday-color);
+  }
 }
 
 .week-day-0 {
-  outline: 0.125rem solid #e57373;
+  outline: 0.125rem solid var(--sunday-color);
   background-color: #fde7e7;
+
+  .week-day-name {
+    color: var(--sunday-color);
+  }
 }
 
 .week-day-name {
