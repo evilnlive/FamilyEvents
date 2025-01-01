@@ -137,7 +137,7 @@ viewWeekDays week =
 
 viewWeekDay : WeekDay -> Week -> Html msg
 viewWeekDay weekDay week =
-    div [ class "week-day" ]
+    div [ class "week-day", class (String.concat [ "week-day-", String.fromInt weekDay.dayOfWeek ]) ]
         (div [ class "week-day-name" ] [ text weekDay.name ]
             :: List.map
                 (\day ->

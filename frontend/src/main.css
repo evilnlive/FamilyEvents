@@ -10,8 +10,42 @@
 }
 
 .week-day {
-  outline: 1px solid #ccc;
   padding: 1rem;
+}
+
+.week-day-1 {
+  outline: 0.125rem solid #7cb342;
+  background-color: #eaf4e0;
+}
+
+.week-day-2 {
+  outline: 0.125rem solid #64b5f6;
+  background-color: #e3f2fd;
+}
+
+.week-day-3 {
+  outline: 0.125rem solid #000;
+  background-color: #f9f9f9;
+}
+
+.week-day-4 {
+  outline: 0.125rem solid #a1887f;
+  background-color: #ede7e3;
+}
+
+.week-day-5 {
+  outline: 0.125rem solid #ffd600;
+  background-color: #fff9e0;
+}
+
+.week-day-6 {
+  outline: 0.125rem solid #f48fb1;
+  background-color: #fde9ef;
+}
+
+.week-day-0 {
+  outline: 0.125rem solid #e57373;
+  background-color: #fde7e7;
 }
 
 .week-day-name {
